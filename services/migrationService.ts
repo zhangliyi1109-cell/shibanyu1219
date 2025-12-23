@@ -34,7 +34,7 @@ export const migrateToSupabase = async (): Promise<void> => {
 
     // 1. 迁移用户设置
     try {
-      const settings = StorageService.getSettings(DEFAULT_SETTINGS);
+      const settings = await StorageService.getSettings(DEFAULT_SETTINGS);
       await SupabaseService.saveSettings(settings);
       console.log('✓ 用户设置已迁移');
     } catch (error) {
@@ -43,7 +43,7 @@ export const migrateToSupabase = async (): Promise<void> => {
 
     // 2. 迁移每日目标
     try {
-      const goals = StorageService.getAllGoals();
+      const goals = await StorageService.getAllGoals();
       for (const goal of goals) {
         await SupabaseService.addGoal(goal);
       }
@@ -54,7 +54,7 @@ export const migrateToSupabase = async (): Promise<void> => {
 
     // 3. 迁移每日事件记录
     try {
-      const achievements = StorageService.getAchievements();
+      const achievements = await StorageService.getAchievements();
       for (const achievement of achievements) {
         await SupabaseService.addAchievement(achievement);
       }
@@ -65,7 +65,7 @@ export const migrateToSupabase = async (): Promise<void> => {
 
     // 4. 迁移深海邻居资料
     try {
-      const cards = StorageService.getColleagueCards();
+      const cards = await StorageService.getColleagueCards();
       if (cards.length > 0) {
         await SupabaseService.saveColleagueCards(cards);
       }
@@ -76,7 +76,7 @@ export const migrateToSupabase = async (): Promise<void> => {
 
     // 5. 迁移自定义标签
     try {
-      const tags = StorageService.getTags();
+      const tags = await StorageService.getTags();
       const defaultTagsSet = new Set(COLLEAGUE_TAGS);
       const customTags = tags.filter((tag) => !defaultTagsSet.has(tag));
       if (customTags.length > 0) {
@@ -89,7 +89,7 @@ export const migrateToSupabase = async (): Promise<void> => {
 
     // 6. 迁移功德计数
     try {
-      const meritCount = StorageService.getMeritCount();
+      const meritCount = await StorageService.getMeritCount();
       if (meritCount > 0) {
         await SupabaseService.saveMeritCount(meritCount);
       }
