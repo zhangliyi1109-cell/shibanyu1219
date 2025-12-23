@@ -6,6 +6,14 @@
   NODE_VERSION = "18"
   npm_config_legacy_peer_deps = "true"
 
+# 强制 HTTPS 重定向
+[[redirects]]
+  from = "http://shibanyu.netlify.app/*"
+  to = "https://shibanyu.netlify.app/:splat"
+  status = 301
+  force = true
+
+# SPA 路由支持
 [[redirects]]
   from = "/*"
   to = "/index.html"
