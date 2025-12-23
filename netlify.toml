@@ -4,6 +4,7 @@
 
 [build.environment]
   NODE_VERSION = "18"
+  npm_config_legacy_peer_deps = "true"
 
 [[redirects]]
   from = "/*"
