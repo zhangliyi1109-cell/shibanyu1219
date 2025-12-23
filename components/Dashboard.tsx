@@ -139,7 +139,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ settings }) => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-transparent p-5 gap-5 overflow-y-auto pb-32">
+    <div className="flex flex-col h-full bg-transparent p-5 gap-5 overflow-y-auto pb-32" style={{ WebkitOverflowScrolling: 'touch' } as React.CSSProperties}>
       
       {/* 1. Mascot Section */}
       <section className="flex flex-col items-center pt-2">
