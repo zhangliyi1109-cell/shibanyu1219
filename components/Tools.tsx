@@ -73,15 +73,15 @@ const ScaleCollection: React.FC = () => {
     if (!newAch.trim()) return;
     setLoading(true);
     try {
-      const fb = await generateAchievementFeedback(newAch);
-      const a: Achievement = { id: crypto.randomUUID(), text: newAch, aiFeedback: fb, timestamp: Date.now(), date: today };
+    const fb = await generateAchievementFeedback(newAch);
+    const a: Achievement = { id: crypto.randomUUID(), text: newAch, aiFeedback: fb, timestamp: Date.now(), date: today };
       await StorageService.addAchievement(a);
-      setAchievements([a, ...achievements]);
-      setNewAch('');
+    setAchievements([a, ...achievements]);
+    setNewAch('');
     } catch (error) {
       console.error('添加事件记录失败:', error);
     } finally {
-      setLoading(false);
+    setLoading(false);
     }
   };
 
@@ -150,30 +150,41 @@ const NPCGallery: React.FC = () => {
 
   const saveCard = async () => {
     const { mode, card } = modalState;
-    if (!card.name || !card.tag) return;
+    if (!card.name || !card.tag) {
+      // 添加视觉反馈：提示用户填写必填字段
+      alert('请填写"名字"和"群体"字段');
+      return;
+    }
 
     let updatedCards: ColleagueCard[];
     if (mode === 'add') {
       const newC: ColleagueCard = { 
         id: crypto.randomUUID(), 
-        name: card.name, 
-        tag: card.tag, 
-        strengths: card.strengths || '暂未发现闪光点', 
-        weaknesses: card.weaknesses || '目前表现良好', 
+        name: card.name.trim(), 
+        tag: card.tag.trim(), 
+        strengths: (card.strengths || '暂未发现闪光点').trim(), 
+        weaknesses: (card.weaknesses || '目前表现良好').trim(), 
         rarity: card.rarity || 1 
       };
       updatedCards = [...cards, newC];
     } else {
-      updatedCards = cards.map(c => c.id === card.id ? (card as ColleagueCard) : c);
+      updatedCards = cards.map(c => c.id === card.id ? ({
+        ...card,
+        name: card.name!.trim(),
+        tag: card.tag!.trim(),
+        strengths: (card.strengths || '暂未发现闪光点').trim(),
+        weaknesses: (card.weaknesses || '目前表现良好').trim(),
+      } as ColleagueCard) : c);
     }
 
     setCards(updatedCards);
     try {
       await StorageService.saveColleagueCards(updatedCards);
+      setModalState({ ...modalState, show: false });
     } catch (error) {
       console.error('保存深海邻居资料失败:', error);
+      alert('保存失败，请重试');
     }
-    setModalState({ ...modalState, show: false });
   };
 
   const deleteCard = async (id: string) => {
@@ -367,8 +378,17 @@ const NPCGallery: React.FC = () => {
                     </button>
                   )}
                   <button 
-                    onClick={saveCard} 
-                    className="flex-1 py-3.5 bg-white text-black rounded-xl font-bold shadow-lg active:scale-95 transition-transform text-sm"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      saveCard();
+                    }} 
+                    disabled={!modalState.card.name || !modalState.card.tag}
+                    className={`flex-1 py-3.5 rounded-xl font-bold shadow-lg transition-all text-sm ${
+                      !modalState.card.name || !modalState.card.tag
+                        ? 'bg-white/20 text-white/40 cursor-not-allowed'
+                        : 'bg-white text-black active:scale-95'
+                    }`}
                   >
                     保存
                   </button>
