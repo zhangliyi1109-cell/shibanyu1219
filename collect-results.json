@@ -1,0 +1,70 @@
+{
+  "console": [
+    {
+      "type": "warning",
+      "text": "[GroupMarkerNotSet(crbug.com/242999)!:A8401800CC0C0000]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader (about:flags#enable-unsafe-swiftshader) flag to opt in to lower security guarantees for trusted content.",
+      "location": {
+        "url": "http://127.0.0.1:8085/",
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "type": "debug",
+      "text": "Installing/Activating first service worker.",
+      "location": {
+        "url": "http://127.0.0.1:8085/flutter_bootstrap.js",
+        "lineNumber": 2,
+        "columnNumber": 532
+      }
+    },
+    {
+      "type": "debug",
+      "text": "Activated new service worker.",
+      "location": {
+        "url": "http://127.0.0.1:8085/flutter_bootstrap.js",
+        "lineNumber": 2,
+        "columnNumber": 1113
+      }
+    },
+    {
+      "type": "debug",
+      "text": "Injecting <script> tag. Using callback.",
+      "location": {
+        "url": "http://127.0.0.1:8085/flutter_bootstrap.js",
+        "lineNumber": 0,
+        "columnNumber": 2400
+      }
+    },
+    {
+      "type": "warning",
+      "text": "[GroupMarkerNotSet(crbug.com/242999)!:A8701800CC0C0000]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader (about:flags#enable-unsafe-swiftshader) flag to opt in to lower security guarantees for trusted content.",
+      "location": {
+        "url": "http://127.0.0.1:8085/",
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "type": "warning",
+      "text": "[GroupMarkerNotSet(crbug.com/242999)!:A8A01800CC0C0000]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader (about:flags#enable-unsafe-swiftshader) flag to opt in to lower security guarantees for trusted content.",
+      "location": {
+        "url": "http://127.0.0.1:8085/",
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "type": "warning",
+      "text": "[.WebGL-0x5d4405db4600]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+      "location": {
+        "url": "http://127.0.0.1:8085/",
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    }
+  ],
+  "pageerror": [],
+  "requestFailed": [],
+  "responses": []
+}

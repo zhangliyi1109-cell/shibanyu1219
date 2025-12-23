@@ -1,0 +1,95 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>石斑鱼 - 在压力深海，学会呼吸</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              sea: {
+                surface: '#1e3a8a',
+                abyss: '#0f172a',
+                dark: '#020617',
+                bubble: 'rgba(255, 255, 255, 0.1)',
+                accent: '#fbbf24', // Amber-400
+              },
+              xhs: {
+                red: '#FF2442',
+                text: '#f8fafc',
+              }
+            },
+            fontFamily: {
+              sans: ['ui-rounded', 'SF Pro Rounded', 'system-ui', 'sans-serif']
+            },
+            boxShadow: {
+              'bubble': '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
+              'neon-amber': '0 0 15px rgba(251, 191, 36, 0.4)'
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      body {
+        background: linear-gradient(to bottom, #1e3a8a, #0f172a, #020617);
+        color: #f8fafc;
+        min-height: 100vh;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+      }
+      ::-webkit-scrollbar {
+        width: 0px;
+        background: transparent;
+      }
+      .glass-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 2.5rem;
+      }
+      @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+      }
+      .animate-float {
+        animation: float 4s ease-in-out infinite;
+      }
+      @keyframes bubble-rise {
+        0% { transform: translateY(0) scale(1); opacity: 0.8; }
+        100% { transform: translateY(-100px) scale(1.2); opacity: 0; }
+      }
+      .bubble-particle {
+        position: absolute;
+        pointer-events: none;
+        animation: bubble-rise 1s ease-out forwards;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "@google/genai": "https://esm.sh/@google/genai",
+    "lucide-react": "https://esm.sh/lucide-react@0.294.0?external=react",
+    "react": "https://esm.sh/react@18.2.0",
+    "react/jsx-runtime": "https://esm.sh/react@18.2.0/jsx-runtime",
+    "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+    "react-dom": "https://esm.sh/react-dom@18.2.0",
+    "framer-motion": "https://esm.sh/framer-motion@10.16.4?external=react,react-dom",
+    "react-confetti": "https://esm.sh/react-confetti@6.1.0?external=react",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>
