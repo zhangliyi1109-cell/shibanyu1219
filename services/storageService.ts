@@ -3,8 +3,11 @@ import { DEFAULT_SETTINGS, COLLEAGUE_TAGS } from "../constants";
 import { SupabaseService } from "./supabaseService";
 import { migrateToSupabase, isMigrated } from "./migrationService";
 
-// 使用 Supabase 存储的配置
-const USE_SUPABASE = true; // 设置为 false 可以回退到 localStorage
+// 检查是否有 Supabase 配置
+const hasSupabaseConfig = !!(import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY);
+
+// 使用 Supabase 存储的配置（只有在配置存在时才启用）
+const USE_SUPABASE = hasSupabaseConfig;
 
 // localStorage 后备方案（用于兼容或离线模式）
 const DB_KEYS = {
