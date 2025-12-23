@@ -55,7 +55,7 @@ export default function App() {
   };
 
   return (
-    <div className="h-screen w-screen flex flex-col overflow-hidden font-sans select-none text-slate-50">
+    <div className="h-full w-full flex flex-col overflow-hidden font-sans select-none text-slate-50" style={{ minHeight: '100vh' } as React.CSSProperties}>
       {/* Deep Sea Gradient Header */}
       <header className="h-20 flex items-center justify-between px-6 z-20 border-b border-white/5 bg-sea-surface/20 backdrop-blur-xl">
         <div className="flex items-center gap-3">

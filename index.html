@@ -4,6 +4,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="format-detection" content="telephone=no" />
     <title>石斑鱼 - 在压力深海，学会呼吸</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -39,8 +42,27 @@
         background: linear-gradient(to bottom, #1e3a8a, #0f172a, #020617);
         color: #f8fafc;
         min-height: 100vh;
+        min-height: -webkit-fill-available; /* iOS Safari */
         overflow-x: hidden;
         -webkit-font-smoothing: antialiased;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+      }
+      
+      html {
+        height: 100%;
+        height: -webkit-fill-available; /* iOS Safari */
+        width: 100%;
+        overflow: hidden;
+      }
+      
+      #root {
+        width: 100%;
+        height: 100%;
+        min-height: 100vh;
+        min-height: -webkit-fill-available; /* iOS Safari */
       }
       ::-webkit-scrollbar {
         width: 0px;
@@ -48,10 +70,19 @@
       }
       .glass-card {
         background: rgba(255, 255, 255, 0.05);
+        /* Safari fallback for backdrop-filter */
+        background: rgba(255, 255, 255, 0.08);
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
         border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 2.5rem;
+      }
+      
+      /* Safari specific fixes */
+      @supports (-webkit-touch-callout: none) {
+        .glass-card {
+          background: rgba(255, 255, 255, 0.1);
+        }
       }
       @keyframes float {
         0%, 100% { transform: translateY(0px); }
@@ -73,6 +104,32 @@
 </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      <div style="padding: 20px; text-align: center; color: white;">
+        <h1>需要启用 JavaScript</h1>
+        <p>请启用浏览器的 JavaScript 功能以使用此应用。</p>
+      </div>
+    </noscript>
+    <script>
+      // 移动端调试：检查 root 元素是否存在
+      window.addEventListener('DOMContentLoaded', function() {
+        const root = document.getElementById('root');
+        if (!root) {
+          console.error('Root element not found!');
+          document.body.innerHTML = '<div style="padding: 20px; color: white; text-align: center;"><h1>错误</h1><p>无法找到根元素</p></div>';
+        } else {
+          console.log('Root element found:', root);
+        }
+      });
+      
+      // 检查脚本加载错误
+      window.addEventListener('error', function(e) {
+        console.error('Script error:', e);
+        if (e.filename && e.filename.includes('.js')) {
+          document.body.innerHTML = '<div style="padding: 20px; color: white; text-align: center;"><h1>加载错误</h1><p>无法加载应用脚本，请检查网络连接。</p><p style="font-size: 12px; margin-top: 10px;">' + e.message + '</p></div>';
+        }
+      }, true);
+    </script>
   <script type="module" src="/index.tsx"></script>
 </body>
 </html>
