@@ -18,7 +18,20 @@ if (!hasSupabaseConfig) {
 let supabaseInstance: SupabaseClient;
 
 if (hasSupabaseConfig) {
-  supabaseInstance = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  supabaseInstance = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    db: {
+      schema: 'public',
+    },
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+    global: {
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+      },
+    },
+  });
 } else {
   // 创建一个占位符客户端，所有方法都会返回错误但不会崩溃应用
   supabaseInstance = createClient('https://placeholder.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsYWNlaG9sZGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NDUxOTIwMDAsImV4cCI6MTk2MDc2ODAwMH0.placeholder') as SupabaseClient;
