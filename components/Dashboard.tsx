@@ -73,8 +73,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ settings }) => {
     const g: DailyGoal = { id: crypto.randomUUID(), date: today, text: newGoalText.trim(), isCompleted: false, createdAt: Date.now() };
     try {
       await StorageService.addGoal(g);
-      setGoals([...goals, g]);
-      setNewGoalText('');
+    setGoals([...goals, g]);
+    setNewGoalText('');
     } catch (error) {
       console.error('添加目标失败:', error);
     }
@@ -101,7 +101,12 @@ export const Dashboard: React.FC<DashboardProps> = ({ settings }) => {
     } catch (error) {
       console.error('保存功德计数失败:', error);
     }
+    
+    // 安全地获取元素位置
+    if (!e.currentTarget) return;
     const rect = e.currentTarget.getBoundingClientRect();
+    if (!rect) return;
+    
     const id = Date.now();
     setPopups(prev => [...prev, { 
       id, 

@@ -29,6 +29,8 @@ if (hasSupabaseConfig) {
     global: {
       headers: {
         'apikey': SUPABASE_ANON_KEY,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
       },
     },
   });
