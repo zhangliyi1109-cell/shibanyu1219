@@ -167,7 +167,7 @@ export default function App() {
               <span className="text-sea-accent font-black text-[10px] tracking-widest opacity-80 uppercase">ShiBanYu</span>
             </div>
             <span className="text-[10px] font-medium text-blue-200/60 tracking-tight">
-              {user.email || '已登录'}
+              {user.phone ? user.phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2') : user.email || '已登录'}
             </span>
           </div>
         </div>

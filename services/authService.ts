@@ -3,6 +3,7 @@ import { User, Session, AuthError } from '@supabase/supabase-js';
 
 export interface AuthUser {
   id: string;
+  phone?: string;
   email?: string;
   user_metadata?: {
     name?: string;
@@ -28,6 +29,7 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
     
     return {
       id: user.id,
+      phone: user.phone,
       email: user.email,
       user_metadata: user.user_metadata,
     };
@@ -52,46 +54,33 @@ export async function getCurrentSession(): Promise<Session | null> {
   }
 }
 
-// 注册（邮箱+密码）
-export async function signUp(email: string, password: string, name?: string): Promise<{ user: AuthUser | null; error: AuthError | null }> {
+// 发送手机验证码
+export async function sendOTP(phone: string): Promise<{ error: AuthError | null }> {
   try {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          name: name || email.split('@')[0],
-        },
-      },
+    // 格式化手机号（确保包含国家代码，例如 +86）
+    const formattedPhone = phone.startsWith('+') ? phone : `+86${phone}`;
+    
+    const { error } = await supabase.auth.signInWithOtp({
+      phone: formattedPhone,
     });
 
-    if (error) {
-      return { user: null, error };
-    }
-
-    return {
-      user: data.user ? {
-        id: data.user.id,
-        email: data.user.email,
-        user_metadata: data.user.user_metadata,
-      } : null,
-      error: null,
-    };
+    return { error };
   } catch (error) {
-    console.error('注册异常:', error);
-    return {
-      user: null,
-      error: error as AuthError,
-    };
+    console.error('发送验证码异常:', error);
+    return { error: error as AuthError };
   }
 }
 
-// 登录（邮箱+密码）
-export async function signIn(email: string, password: string): Promise<{ user: AuthUser | null; error: AuthError | null }> {
+// 验证手机验证码（登录/注册）
+export async function verifyOTP(phone: string, token: string): Promise<{ user: AuthUser | null; error: AuthError | null }> {
   try {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
+    // 格式化手机号
+    const formattedPhone = phone.startsWith('+') ? phone : `+86${phone}`;
+    
+    const { data, error } = await supabase.auth.verifyOtp({
+      phone: formattedPhone,
+      token,
+      type: 'sms',
     });
 
     if (error) {
@@ -101,13 +90,14 @@ export async function signIn(email: string, password: string): Promise<{ user: A
     return {
       user: data.user ? {
         id: data.user.id,
+        phone: data.user.phone,
         email: data.user.email,
         user_metadata: data.user.user_metadata,
       } : null,
       error: null,
     };
   } catch (error) {
-    console.error('登录异常:', error);
+    console.error('验证码验证异常:', error);
     return {
       user: null,
       error: error as AuthError,
@@ -126,34 +116,9 @@ export async function signOut(): Promise<{ error: AuthError | null }> {
   }
 }
 
-// 重置密码
-export async function resetPassword(email: string): Promise<{ error: AuthError | null }> {
-  try {
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
-    });
-    return { error };
-  } catch (error) {
-    console.error('重置密码异常:', error);
-    return { error: error as AuthError };
-  }
-}
-
-// 重新发送验证邮件
-export async function resendConfirmationEmail(email: string): Promise<{ error: AuthError | null }> {
-  try {
-    const { error } = await supabase.auth.resend({
-      type: 'signup',
-      email: email,
-      options: {
-        emailRedirectTo: `${window.location.origin}`,
-      },
-    });
-    return { error };
-  } catch (error) {
-    console.error('重新发送验证邮件异常:', error);
-    return { error: error as AuthError };
-  }
+// 重新发送验证码
+export async function resendOTP(phone: string): Promise<{ error: AuthError | null }> {
+  return sendOTP(phone);
 }
 
 // 监听认证状态变化
@@ -161,6 +126,7 @@ export function onAuthStateChange(callback: (user: AuthUser | null, session: Ses
   return supabase.auth.onAuthStateChange((event, session) => {
     const user = session?.user ? {
       id: session.user.id,
+      phone: session.user.phone,
       email: session.user.email,
       user_metadata: session.user.user_metadata,
     } : null;
