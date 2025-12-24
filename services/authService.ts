@@ -139,6 +139,23 @@ export async function resetPassword(email: string): Promise<{ error: AuthError |
   }
 }
 
+// 重新发送验证邮件
+export async function resendConfirmationEmail(email: string): Promise<{ error: AuthError | null }> {
+  try {
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email: email,
+      options: {
+        emailRedirectTo: `${window.location.origin}`,
+      },
+    });
+    return { error };
+  } catch (error) {
+    console.error('重新发送验证邮件异常:', error);
+    return { error: error as AuthError };
+  }
+}
+
 // 监听认证状态变化
 export function onAuthStateChange(callback: (user: AuthUser | null, session: Session | null) => void) {
   return supabase.auth.onAuthStateChange((event, session) => {

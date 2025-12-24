@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Fish, Mail, Lock, User, Eye, EyeOff, Loader2 } from 'lucide-react';
-import { signIn, signUp, resetPassword, AuthUser } from '../services/authService';
+import { signIn, signUp, resetPassword, resendConfirmationEmail, AuthUser } from '../services/authService';
 
 interface LoginProps {
   onLoginSuccess: (user: AuthUser) => void;
@@ -37,6 +37,7 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setSuccess(null);
 
     if (!email || !password) {
       setError('请填写邮箱和密码');
@@ -47,7 +48,14 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
     const { user, error: authError } = await signIn(email, password);
     
     if (authError) {
-      setError(authError.message || '登录失败，请检查邮箱和密码');
+      // 检查是否是邮箱未验证错误
+      if (authError.message?.includes('Email not confirmed') || 
+          authError.message?.includes('email_not_confirmed') ||
+          authError.message?.includes('未确认')) {
+        setError('邮箱未验证。请检查您的邮箱并点击验证链接，或点击下方按钮重新发送验证邮件。');
+      } else {
+        setError(authError.message || '登录失败，请检查邮箱和密码');
+      }
     } else if (user) {
       onLoginSuccess(user);
     } else {
@@ -61,6 +69,7 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setSuccess(null);
 
     if (!email || !password) {
       setError('请填写邮箱和密码');
@@ -79,13 +88,34 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
     if (authError) {
       setError(authError.message || '注册失败，请重试');
     } else if (user) {
-      setSuccess('注册成功！请检查邮箱验证链接（如已启用邮箱验证）');
-      // 自动登录
-      setTimeout(() => {
-        onLoginSuccess(user);
-      }, 1000);
+      // 检查是否需要邮箱验证
+      // Supabase 在启用邮箱验证时，注册后用户需要验证邮箱才能登录
+      setSuccess('注册成功！验证邮件已发送到您的邮箱，请点击邮件中的链接完成验证后再登录。');
+      // 不自动登录，等待用户验证邮箱
     } else {
       setError('注册失败，请重试');
+    }
+    
+    setLoading(false);
+  };
+
+  // 重新发送验证邮件
+  const handleResendConfirmation = async () => {
+    if (!email) {
+      setError('请先输入邮箱地址');
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    setSuccess(null);
+
+    const { error: authError } = await resendConfirmationEmail(email);
+    
+    if (authError) {
+      setError(authError.message || '发送验证邮件失败，请重试');
+    } else {
+      setSuccess('验证邮件已重新发送，请检查您的邮箱（包括垃圾邮件文件夹）');
     }
     
     setLoading(false);
@@ -263,16 +293,30 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
               </div>
             )}
 
-            {/* 忘记密码链接（登录模式） */}
+            {/* 忘记密码链接和重新发送验证邮件（登录模式） */}
             {mode === 'login' && (
-              <div className="text-right">
-                <button
-                  type="button"
-                  onClick={() => setMode('forgot')}
-                  className="text-sm text-blue-300/80 hover:text-blue-200 transition-colors"
-                >
-                  忘记密码？
-                </button>
+              <div className="space-y-2">
+                <div className="text-right">
+                  <button
+                    type="button"
+                    onClick={() => setMode('forgot')}
+                    className="text-sm text-blue-300/80 hover:text-blue-200 transition-colors"
+                  >
+                    忘记密码？
+                  </button>
+                </div>
+                {error && (error.includes('邮箱未验证') || error.includes('Email not confirmed')) && (
+                  <div className="text-center">
+                    <button
+                      type="button"
+                      onClick={handleResendConfirmation}
+                      disabled={loading}
+                      className="text-sm text-sea-accent hover:text-sea-accent/80 transition-colors disabled:opacity-50"
+                    >
+                      重新发送验证邮件
+                    </button>
+                  </div>
+                )}
               </div>
             )}
 
@@ -285,6 +329,20 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
                   className="text-sm text-blue-300/80 hover:text-blue-200 transition-colors"
                 >
                   返回登录
+                </button>
+              </div>
+            )}
+
+            {/* 重新发送验证邮件（注册模式，注册成功后显示） */}
+            {mode === 'register' && success && success.includes('验证邮件') && (
+              <div className="text-center">
+                <button
+                  type="button"
+                  onClick={handleResendConfirmation}
+                  disabled={loading}
+                  className="text-sm text-sea-accent hover:text-sea-accent/80 transition-colors disabled:opacity-50"
+                >
+                  重新发送验证邮件
                 </button>
               </div>
             )}
