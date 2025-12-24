@@ -23,8 +23,9 @@ if (hasSupabaseConfig) {
       schema: 'public',
     },
     auth: {
-      persistSession: false,
-      autoRefreshToken: false,
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
     },
     global: {
       headers: {

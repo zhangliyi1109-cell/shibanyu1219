@@ -78,13 +78,22 @@ CREATE INDEX IF NOT EXISTS idx_colleague_cards_user ON colleague_cards(user_id);
 CREATE INDEX IF NOT EXISTS idx_colleague_cards_rarity ON colleague_cards(rarity);
 CREATE INDEX IF NOT EXISTS idx_custom_tags_user ON custom_tags(user_id);
 
--- 启用 Row Level Security (RLS) - 可选，如果需要多用户支持
--- ALTER TABLE user_settings ENABLE ROW LEVEL SECURITY;
--- ALTER TABLE daily_goals ENABLE ROW LEVEL SECURITY;
--- ALTER TABLE daily_achievements ENABLE ROW LEVEL SECURITY;
--- ALTER TABLE colleague_cards ENABLE ROW LEVEL SECURITY;
--- ALTER TABLE custom_tags ENABLE ROW LEVEL SECURITY;
--- ALTER TABLE merit_count ENABLE ROW LEVEL SECURITY;
+-- 禁用 Row Level Security (RLS) - 当前应用使用单用户模式（user_id = 'default'）
+-- 如果需要多用户支持，可以启用 RLS 并创建相应的策略
+ALTER TABLE user_settings DISABLE ROW LEVEL SECURITY;
+ALTER TABLE daily_goals DISABLE ROW LEVEL SECURITY;
+ALTER TABLE daily_achievements DISABLE ROW LEVEL SECURITY;
+ALTER TABLE colleague_cards DISABLE ROW LEVEL SECURITY;
+ALTER TABLE custom_tags DISABLE ROW LEVEL SECURITY;
+ALTER TABLE merit_count DISABLE ROW LEVEL SECURITY;
+
+-- 如果 RLS 已启用，可以使用以下策略允许所有操作（仅用于单用户应用）
+-- CREATE POLICY "Allow all operations for anon" ON user_settings FOR ALL TO anon USING (true) WITH CHECK (true);
+-- CREATE POLICY "Allow all operations for anon" ON daily_goals FOR ALL TO anon USING (true) WITH CHECK (true);
+-- CREATE POLICY "Allow all operations for anon" ON daily_achievements FOR ALL TO anon USING (true) WITH CHECK (true);
+-- CREATE POLICY "Allow all operations for anon" ON colleague_cards FOR ALL TO anon USING (true) WITH CHECK (true);
+-- CREATE POLICY "Allow all operations for anon" ON custom_tags FOR ALL TO anon USING (true) WITH CHECK (true);
+-- CREATE POLICY "Allow all operations for anon" ON merit_count FOR ALL TO anon USING (true) WITH CHECK (true);
 
 -- 创建更新时间的触发器函数
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -95,13 +104,16 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- 为需要 updated_at 的表创建触发器
+-- 为需要 updated_at 的表创建触发器（如果不存在则创建）
+DROP TRIGGER IF EXISTS update_user_settings_updated_at ON user_settings;
 CREATE TRIGGER update_user_settings_updated_at BEFORE UPDATE ON user_settings
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_colleague_cards_updated_at ON colleague_cards;
 CREATE TRIGGER update_colleague_cards_updated_at BEFORE UPDATE ON colleague_cards
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_merit_count_updated_at ON merit_count;
 CREATE TRIGGER update_merit_count_updated_at BEFORE UPDATE ON merit_count
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 

@@ -23,6 +23,23 @@ export default defineConfig(({ mode }) => {
       build: {
         outDir: 'dist',
         emptyOutDir: true,
+        rollupOptions: {
+          external: [
+            '@capacitor/core',
+            '@capacitor/status-bar',
+            '@capacitor/splash-screen',
+            '@capacitor/keyboard',
+            '@capacitor/app',
+          ],
+          output: {
+            manualChunks: {
+              'react-vendor': ['react', 'react-dom'],
+              'ui-vendor': ['framer-motion', 'lucide-react'],
+              'storage-vendor': ['@supabase/supabase-js'],
+            },
+          },
+        },
+        chunkSizeWarningLimit: 1000,
       }
     };
 });
