@@ -18,7 +18,9 @@
    - 手机号脱敏显示
    - 友好的错误提示
 
-## 🔧 Supabase 配置
+## 🔧 Supabase 配置（必须！）
+
+### ⚠️ 重要：如果不配置，会报错 "Unsupported phone provider"
 
 ### 1. 启用手机号认证
 
@@ -26,10 +28,21 @@
 
 1. 进入 **Authentication** → **Providers**
 2. 找到 **Phone** 提供商
-3. **启用** Phone 认证
+3. **启用** Phone 认证（必须！）
 4. 配置以下设置：
    - **Enable phone confirmations**: 开启（必须）
    - **Phone number format**: 选择你的国家/地区
+
+### ⚠️ 如果看到 "Unsupported phone provider" 错误
+
+这说明 Phone 认证未启用或短信服务未配置。请按照以下步骤操作：
+
+1. **检查 Phone 提供商是否启用**
+   - 进入 Supabase 控制台
+   - Authentication → Providers
+   - 确认 Phone 已启用（开关打开）
+
+2. **配置短信服务**（见下方）
 
 ### 2. 配置短信服务
 

@@ -66,7 +66,15 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
     const { error: authError } = await sendOTP(formattedPhone);
     
     if (authError) {
-      setError(authError.message || '发送验证码失败，请重试');
+      // 检查是否是短信服务未配置的错误
+      if (authError.message?.includes('Unsupported phone provider') || 
+          authError.message?.includes('phone provider') ||
+          authError.message?.includes('SMS provider') ||
+          authError.message?.includes('not configured')) {
+        setError('短信服务未配置。请按以下步骤操作：1) 在 Supabase 控制台启用 Phone 认证 2) 配置短信服务（如 Twilio）。详细说明请查看 PHONE_AUTH_FIX.md');
+      } else {
+        setError(authError.message || '发送验证码失败，请重试');
+      }
     } else {
       setSuccess('验证码已发送，请查收短信');
       setMode('verify');
