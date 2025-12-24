@@ -20,12 +20,29 @@ export default function App() {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
 
-  // 检查认证状态
+  // 检查认证状态和处理 OAuth 回调
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        // 检查 URL 中是否有 OAuth 回调参数
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        const accessToken = hashParams.get('access_token');
+        const error = hashParams.get('error');
+        
+        if (error) {
+          console.error('OAuth 错误:', error);
+          // 清除 URL 中的错误参数
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+        
+        // 获取当前用户（包括 OAuth 登录的用户）
         const currentUser = await getCurrentUser();
         setUser(currentUser);
+        
+        // 如果有 access_token，说明是 OAuth 回调，清除 URL 参数
+        if (accessToken) {
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
       } catch (error) {
         console.error('检查认证状态失败:', error);
       } finally {
@@ -167,7 +184,9 @@ export default function App() {
               <span className="text-sea-accent font-black text-[10px] tracking-widest opacity-80 uppercase">ShiBanYu</span>
             </div>
             <span className="text-[10px] font-medium text-blue-200/60 tracking-tight">
-              {user.phone ? user.phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2') : user.email || '已登录'}
+              {user.phone 
+                ? user.phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')
+                : user.user_metadata?.name || user.email || '已登录'}
             </span>
           </div>
         </div>

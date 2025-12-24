@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Fish, Phone, Lock, User, Loader2 } from 'lucide-react';
-import { sendOTP, verifyOTP, resendOTP, AuthUser } from '../services/authService';
+import { sendOTP, verifyOTP, resendOTP, signInWithWeChat, AuthUser } from '../services/authService';
 
 interface LoginProps {
   onLoginSuccess: (user: AuthUser) => void;
@@ -130,6 +130,20 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
     setSuccess(null);
   };
 
+  // 微信登录
+  const handleWeChatLogin = async () => {
+    setLoading(true);
+    setError(null);
+    
+    const { error } = await signInWithWeChat();
+    
+    if (error) {
+      setError(error.message || '微信登录失败，请重试');
+      setLoading(false);
+    }
+    // 如果成功，会重定向到微信授权页面，不需要处理成功情况
+  };
+
   return (
     <div className="h-full w-full flex items-center justify-center p-6 bg-gradient-to-b from-sea-surface via-sea-abyss to-sea-dark">
       <motion.div
@@ -214,6 +228,38 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
                   <span>发送验证码</span>
                 )}
               </button>
+
+              {/* 分隔线 */}
+              <div className="relative my-6">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-white/10"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-transparent text-blue-200/40">或</span>
+                </div>
+              </div>
+
+              {/* 微信登录按钮 */}
+              <button
+                type="button"
+                onClick={handleWeChatLogin}
+                disabled={loading}
+                className="w-full py-3 bg-[#07C160] text-white font-bold rounded-xl hover:bg-[#06AD56] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 shadow-lg"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="animate-spin" size={20} />
+                    <span>跳转中...</span>
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 0 1 .213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 0 0 .167-.054l1.903-1.114a.864.864 0 0 1 .717-.098 10.16 10.16 0 0 0 2.837.403c.276 0 .543-.027.811-.05-.857-2.578.157-4.972 1.932-6.446 1.703-1.415 3.882-1.98 5.853-1.838-.576-3.583-4.196-6.348-8.496-6.348zM5.785 5.991c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178A1.17 1.17 0 0 1 4.623 7.17c0-.651.52-1.18 1.162-1.18zm5.813 0c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178 1.17 1.17 0 0 1-1.162-1.178c0-.651.52-1.18 1.162-1.18zm6.281 3.336c-1.892-.104-3.942.376-5.524 1.63-1.522 1.2-2.396 3.148-2.169 5.018.107.877.586 1.66 1.303 2.2.855.644 1.918.95 2.985.838a8.16 8.16 0 0 0 2.604-.732.864.864 0 0 1 .717-.098l1.902 1.114a.326.326 0 0 0 .167.054c.16 0 .29-.132.29-.295 0-.072-.029-.142-.048-.213l-.39-1.48a.59.59 0 0 1 .213-.665c1.717-1.278 2.756-3.143 2.756-5.2 0-3.582-3.405-6.47-7.6-6.47zm-4.218 3.336c.519 0 .94.427.94.953a.948.948 0 0 1-.94.953.948.948 0 0 1-.94-.953c0-.526.421-.953.94-.953zm4.218 0c.519 0 .94.427.94.953a.948.948 0 0 1-.94.953.948.948 0 0 1-.94-.953c0-.526.421-.953.94-.953z"/>
+                    </svg>
+                    <span>微信登录</span>
+                  </>
+                )}
+              </button>
             </form>
           )}
 
@@ -290,7 +336,7 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
 
         {/* 底部提示 */}
         <p className="text-center mt-6 text-blue-200/40 text-xs">
-          使用手机号登录，验证码将发送到您的手机
+          {mode === 'phone' ? '使用手机号或微信登录' : '验证码将发送到您的手机'}
         </p>
       </motion.div>
     </div>

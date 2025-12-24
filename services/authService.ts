@@ -121,6 +121,27 @@ export async function resendOTP(phone: string): Promise<{ error: AuthError | nul
   return sendOTP(phone);
 }
 
+// 微信登录
+export async function signInWithWeChat(): Promise<{ error: AuthError | null }> {
+  try {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'wechat',
+      options: {
+        redirectTo: `${window.location.origin}`,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        },
+      },
+    });
+
+    return { error };
+  } catch (error) {
+    console.error('微信登录异常:', error);
+    return { error: error as AuthError };
+  }
+}
+
 // 监听认证状态变化
 export function onAuthStateChange(callback: (user: AuthUser | null, session: Session | null) => void) {
   return supabase.auth.onAuthStateChange((event, session) => {
